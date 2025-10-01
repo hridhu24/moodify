@@ -1,21 +1,23 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from sentiment import get_mood
 
 app = FastAPI()
 
-# Allow frontend requests (from localhost:3000)
-origins = [
-    "http://localhost:3000",
-]
-
+origins = ["http://localhost:3000"]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # can also use ["*"] for all origins
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-@app.get("/test")
-def read_root():
-    return {"message": "Hello Moodify!"}
+class MoodRequest(BaseModel):
+    text: str
+
+@app.post("/mood")
+def detect_mood(request: MoodRequest):
+    mood = get_mood(request.text)
+    return {"mood": mood}
