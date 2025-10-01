@@ -4,7 +4,7 @@ frontend/build/
 frontend/.env
 
 # Python / FastAPI
-backend/venv/
+backend/mood/
 backend/__pycache__/
 backend/*.pyc
 backend/.env
