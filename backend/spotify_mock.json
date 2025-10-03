@@ -1,0 +1,63 @@
+{
+  "happy": [
+    {
+      "id": "mock_h1",
+      "name": "Happy Vibes",
+      "image": "https://picsum.photos/300?random=1",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DXdPec7aLTmlC",
+      "owner": "Spotify"
+    },
+    {
+      "id": "mock_h2",
+      "name": "Good Mood",
+      "image": "https://picsum.photos/300?random=2",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DX6aTaZa0K6VA",
+      "owner": "Spotify"
+    }
+  ],
+  "sad": [
+    {
+      "id": "mock_s1",
+      "name": "Sad Songs",
+      "image": "https://picsum.photos/300?random=3",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DWVV27DiNWxkR",
+      "owner": "Spotify"
+    }
+  ],
+  "stressed": [
+    {
+      "id": "mock_st1",
+      "name": "Calm Lofi",
+      "image": "https://picsum.photos/300?random=4",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DX3Ogo9pFvBkY",
+      "owner": "Spotify"
+    }
+  ],
+  "relaxed": [
+    {
+      "id": "mock_r1",
+      "name": "Deep Focus",
+      "image": "https://picsum.photos/300?random=5",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DX8Uebhn9wzrS",
+      "owner": "Spotify"
+    }
+  ],
+  "motivated": [
+    {
+      "id": "mock_m1",
+      "name": "Beast Mode",
+      "image": "https://picsum.photos/300?random=6",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DX76Wlfdnj7AP",
+      "owner": "Spotify"
+    }
+  ],
+  "default": [
+    {
+      "id": "mock_d1",
+      "name": "All Out 00s",
+      "image": "https://picsum.photos/300?random=7",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DX4o1oenSJRJd",
+      "owner": "Spotify"
+    }
+  ]
+}

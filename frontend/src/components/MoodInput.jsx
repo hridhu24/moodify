@@ -1,29 +1,13 @@
 import React, { useState } from "react";
 
-function MoodInput({ onMoodDetected }) {
+function MoodInput({ onSubmit }) {
   const [text, setText] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!text.trim()) return;
-
-    setLoading(true);
-    try {
-      const res = await fetch("http://127.0.0.1:8000/mood", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text }),
-      });
-      if (!res.ok) throw new Error("Server error");
-      const data = await res.json();
-      onMoodDetected(data.mood); // pass mood back to parent
-    } catch (err) {
-      console.error(err);
-      onMoodDetected(null);
-    } finally {
-      setLoading(false);
-    }
+    onSubmit(text); // pass text back to parent
+    setText("");    // clear after submit
   };
 
   return (
@@ -37,10 +21,9 @@ function MoodInput({ onMoodDetected }) {
       />
       <button
         type="submit"
-        disabled={loading}
         className="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600"
       >
-        {loading ? "Detecting..." : "Detect Mood"}
+        Detect Mood
       </button>
     </form>
   );
