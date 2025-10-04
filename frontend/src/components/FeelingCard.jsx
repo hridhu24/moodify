@@ -1,4 +1,4 @@
-import { m, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import happyIcon from "../assets/happy.png";
 import sadIcon from "../assets/sad.png";
 import angryIcon from "../assets/angry.png";

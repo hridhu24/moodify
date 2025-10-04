@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom"; // ✅ for reading URL query par
 import PlaylistCard from "../components/PlaylistCard";
 import AnimeCard from "../components/AnimeCard";
 import FeelingCard from "../components/FeelingCard";
+import Loader from "../components/Loader";
 
 
 export default function Recommendations() {
@@ -45,9 +46,8 @@ export default function Recommendations() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-8">
-        <span className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-transparent"></span>
-        <p className="ml-3 text-lightgrey">Fetching recommendations…</p>
+      <div className="fixed inset-0 flex items-center justify-center z-50">
+        <Loader />
       </div>
     );
   }

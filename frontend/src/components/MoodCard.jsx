@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { motion } from "framer-motion"; // ✨ Import animation library
+import { motion } from "framer-motion"; 
+import Loader from "./Loader";
+
+
 
 export default function MoodCard({ onSubmit }) {
   const [text, setText] = useState("");
@@ -77,7 +80,14 @@ export default function MoodCard({ onSubmit }) {
             hover:animate-[pulse-glow_1.5s_ease-in-out_infinite]
           "
         >
-          {loading ? "Detecting..." : "Moodify Me"}
+          {loading ? (
+            <div className="flex items-center justify-center gap-3">
+              <Loader />
+              <span className="text-white text-sm">Detecting Mood...</span>
+            </div>
+          ) : (
+            "Moodify Me"
+          )}
         </button>
       </form>
     </motion.div>
