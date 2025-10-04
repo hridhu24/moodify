@@ -1,12 +1,23 @@
 import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom"; // ✅ for reading URL query params
 import PlaylistCard from "../components/PlaylistCard";
 import AnimeCard from "../components/AnimeCard";
 
-function Recommendations({ mood }) {
+export default function Recommendations() {
+  const location = useLocation();
+  const [mood, setMood] = useState("");
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
 
+  // ✅ Extract mood from URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const moodParam = params.get("mood");
+    if (moodParam) setMood(moodParam);
+  }, [location]);
+
+  // ✅ Fetch recommendations when mood is available
   useEffect(() => {
     if (!mood) return;
 
@@ -22,7 +33,14 @@ function Recommendations({ mood }) {
       .finally(() => setLoading(false));
   }, [mood]);
 
-  if (!mood) return null;
+  // ✅ Loading state
+  if (!mood)
+    return (
+      <p className="text-center text-gray-500 mt-10">
+        No mood detected — please return to home.
+      </p>
+    );
+
   if (loading) {
     return (
       <div className="flex justify-center py-8">
@@ -31,17 +49,24 @@ function Recommendations({ mood }) {
       </div>
     );
   }
-  if (error) return <p className="text-red-500 text-center">⚠️ {error}</p>;
 
+  if (error)
+    return <p className="text-red-500 text-center mt-10">⚠️ {error}</p>;
+
+  // ✅ Main UI
   return (
-    <div className="mt-8 space-y-12">
+    <div className="pt-32 px-6 max-w-6xl mx-auto space-y-12">
+      <h2 className="text-3xl font-semibold text-font-l-color dark:text-font-d-color text-center mb-12">
+        Recommendations for: {mood}
+      </h2>
+
       {/* Spotify playlists */}
       <section>
-        <h2 className="text-2xl font-bold mb-6 text-font-l-color dark:text-font-d-color flex items-center gap-2">
+        <h3 className="text-2xl font-bold mb-6 text-font-l-color dark:text-font-d-color flex items-center gap-2">
           🎵 Spotify Playlists
-        </h2>
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data.playlists.length > 0 ? (
+          {data?.playlists?.length > 0 ? (
             data.playlists.map((p) => <PlaylistCard key={p.id} playlist={p} />)
           ) : (
             <p className="text-gray-500">No playlists found for this mood.</p>
@@ -51,11 +76,11 @@ function Recommendations({ mood }) {
 
       {/* Anime suggestions */}
       <section>
-        <h2 className="text-2xl font-bold mb-6 text-font-l-color dark:text-font-d-color flex items-center gap-2">
+        <h3 className="text-2xl font-bold mb-6 text-font-l-color dark:text-font-d-color flex items-center gap-2">
           🎬 Anime Suggestions
-        </h2>
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {data.anime.length > 0 ? (
+          {data?.anime?.length > 0 ? (
             data.anime.map((a) => <AnimeCard key={a.id} anime={a} />)
           ) : (
             <p className="text-gray-500">No anime suggestions found.</p>
@@ -65,5 +90,3 @@ function Recommendations({ mood }) {
     </div>
   );
 }
-
-export default Recommendations;
