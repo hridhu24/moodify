@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom"; // ✅ for reading URL query params
 import PlaylistCard from "../components/PlaylistCard";
 import AnimeCard from "../components/AnimeCard";
+import FeelingCard from "../components/FeelingCard";
+
 
 export default function Recommendations() {
   const location = useLocation();
@@ -56,9 +58,8 @@ export default function Recommendations() {
   // ✅ Main UI
   return (
     <div className="pt-32 px-6 max-w-6xl mx-auto space-y-12">
-      <h2 className="text-3xl font-semibold text-font-l-color dark:text-font-d-color text-center mb-12">
-        Recommendations for: {mood}
-      </h2>
+      {/* ✅ Feeling Card at top */}
+    <FeelingCard mood={mood} />
 
       {/* Spotify playlists */}
       <section>
