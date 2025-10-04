@@ -27,7 +27,7 @@ export default function Home() {
   };
 
   return (
-    <section className="pt-32 px-4 flex flex-col items-center justify-center">
+    <section className="pt-32 md:pt-48 lg:pt-56 px-4 flex flex-col items-center justify-center">
       <MoodCard onSubmit={handleMoodSubmit} />
 
       {loading && <p className="mt-4 text-lightgrey">Detecting mood...</p>}
