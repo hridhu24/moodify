@@ -36,6 +36,9 @@ module.exports = {
         'mood-card': '58px',
         'about-card': '30px',
       },
+      fontFamily: {
+        poppins: ["Poppins", "sans-serif"],
+      },
     },
   },
   plugins: [],

@@ -5,3 +5,14 @@
 /* Optional: a cozy background */
 :root { color-scheme: light; }
 html.dark { color-scheme: dark; }
+
+@import "@fontsource/poppins/400.css";
+@import "@fontsource/poppins/500.css";
+@import "@fontsource/poppins/600.css";
+@import "@fontsource/poppins/700.css";
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(251,123,213,0.4); }
+  50% { box-shadow: 0 0 40px rgba(183,110,246,0.6); }
+}
+

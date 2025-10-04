@@ -1,6 +1,6 @@
 import { useState } from "react";
-import MoodInput from "../components/MoodInput";
 import Recommendations from "./Recommendations";
+import MoodCard from "../components/MoodCard";
 
 export default function Home() {
   const [mood, setMood] = useState("");
@@ -27,20 +27,19 @@ export default function Home() {
   };
 
   return (
-    <section className="pt-20 px-4 max-w-5xl mx-auto text-center">
-      <h1 className="text-3xl font-bold mb-6 text-font-l-color dark:text-font-d-color">
-        What’s your mood today?
-      </h1>
+    <section className="pt-32 px-4 flex flex-col items-center justify-center">
+      {/* ✅ Mood Card */}
+      <MoodCard onSubmit={handleMoodSubmit} />
 
-      <MoodInput onSubmit={handleMoodSubmit} />
-
+      {/* ✅ Loading & Error states */}
       {loading && <p className="mt-4 text-lightgrey">Detecting mood...</p>}
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
+      {/* ✅ Recommendations */}
       {mood && (
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-6">
-            Feeling: <span className="text-font-l-color dark:text-font-d-color">{mood}</span>
+        <div className="mt-16 text-center">
+          <h2 className="text-2xl font-bold mb-6 text-font-l-color dark:text-font-d-color">
+            Feeling: {mood}
           </h2>
           <Recommendations mood={mood} />
         </div>

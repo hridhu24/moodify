@@ -12,6 +12,7 @@ export default function Navbar() {
         shadow-[0_4px_20px_rgba(0,0,0,0.05)]
         border-b border-white/20 dark:border-gray-700/30
         z-50
+        font-poppins
       "
     >
       <div className="w-full flex justify-between items-center px-8 py-3">
@@ -25,11 +26,11 @@ export default function Navbar() {
 
         {/* ---- Right: Links + Theme Toggle ---- */}
         <div className="flex items-center gap-8">
-          <ul className="hidden md:flex items-center gap-8 font-semibold text-font-l-color dark:text-font-d-color">
+          <ul className="hidden md:flex items-center gap-8 font-semibold text-lg text-font-l-color dark:text-font-d-color">
             <li>
               <Link
                 to="/"
-                className="hover:text-button-1 transition-all duration-200"
+                className="hover:text-button-1 transition-all duration-200 hover:scale-105"
               >
                 Home
               </Link>
@@ -37,7 +38,7 @@ export default function Navbar() {
             <li>
               <Link
                 to="/about"
-                className="hover:text-button-2 transition-all duration-200"
+                className="hover:text-button-2 transition-all duration-200 hover:scale-105"
               >
                 About
               </Link>

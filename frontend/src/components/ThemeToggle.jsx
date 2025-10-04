@@ -1,23 +1,31 @@
 import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react"; // ✅ icon library already available in Vite/React
 
 export default function ThemeToggle() {
-  const [dark, setDark] = useState(
-    () => localStorage.getItem("theme") === "dark"
-  );
+  const [dark, setDark] = useState(false);
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (dark) { root.classList.add("dark");  localStorage.setItem("theme","dark"); }
-    else      { root.classList.remove("dark"); localStorage.setItem("theme","light"); }
+    if (dark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, [dark]);
 
   return (
     <button
-      onClick={() => setDark(v => !v)}
-      className="rounded-full px-3 py-1 text-sm bg-gray-100 dark:bg-gray-800 hover:opacity-90"
-      title="Toggle theme"
+      onClick={() => setDark(!dark)}
+      className={`
+        p-3 rounded-full
+        transition-all duration-300 ease-in-out
+        bg-gradient-to-r from-button-1 to-button-2
+        text-white shadow-[0_0_15px_rgba(183,110,246,0.4)]
+        hover:shadow-[0_0_25px_rgba(251,123,213,0.6)]
+        active:scale-95
+      `}
+      aria-label="Toggle Theme"
     >
-      {dark ? "🌙" : "☀️"}
+      {dark ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
     </button>
   );
 }
