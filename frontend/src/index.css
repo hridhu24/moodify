@@ -3,6 +3,5 @@
 @tailwind utilities;
 
 /* Optional: a cozy background */
-body {
-  @apply bg-gradient-to-b from-pink-50 via-amber-50 to-blue-50;
-}
+:root { color-scheme: light; }
+html.dark { color-scheme: dark; }

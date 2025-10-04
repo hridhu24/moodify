@@ -1,8 +1,8 @@
 import { useState } from "react";
-import MoodInput from "./components/MoodInput";
-import Recommendations from "./pages/Recommendations";
+import MoodInput from "../components/MoodInput";
+import Recommendations from "./Recommendations";
 
-function App() {
+export default function Home() {
   const [mood, setMood] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -27,22 +27,24 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>Moodify 🎵</h1>
+    <section className="pt-20 px-4 max-w-5xl mx-auto text-center">
+      <h1 className="text-3xl font-bold mb-6 text-font-l-color dark:text-font-d-color">
+        What’s your mood today?
+      </h1>
 
       <MoodInput onSubmit={handleMoodSubmit} />
 
-      {loading && <p>Detecting mood...</p>}
-      {error && <p className="error">{error}</p>}
+      {loading && <p className="mt-4 text-lightgrey">Detecting mood...</p>}
+      {error && <p className="mt-4 text-red-500">{error}</p>}
 
       {mood && (
-        <>
-          <h2>Detected Mood: {mood}</h2>
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold mb-6">
+            Feeling: <span className="text-font-l-color dark:text-font-d-color">{mood}</span>
+          </h2>
           <Recommendations mood={mood} />
-        </>
+        </div>
       )}
-    </div>
+    </section>
   );
 }
-
-export default App;
