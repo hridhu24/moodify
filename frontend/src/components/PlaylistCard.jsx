@@ -13,6 +13,7 @@ export default function PlaylistCard({ playlist }) {
         p-5 flex flex-col items-center text-center
         transition-all duration-300 ease-in-out
         hover:shadow-[0_0_20px_rgba(183,110,246,0.3)]
+        font-poppins
       "
     >
       {/* ✅ Responsive Playlist Cover */}
