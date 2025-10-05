@@ -36,9 +36,9 @@ export default function MoodCard({ onSubmit }) {
       }}
     >
       {/* Title */}
-      <h1 className="text-4xl font-semibold text-font-l-color dark:text-font-d-color mb-8 drop-shadow-[0_2px_2px_rgba(0,0,0,0.15)]">
+      <h2 className="text-4xl font-semibold text-font-l-color dark:text-font-d-color mb-8 drop-shadow-[0_2px_2px_rgba(0,0,0,0.15)]">
         What’s your mood today?
-      </h1>
+      </h2>
 
       {/* Input + Button */}
       <form

@@ -66,7 +66,7 @@ export default function Recommendations() {
         <h3 className="text-2xl font-bold mb-6 text-font-l-color dark:text-font-d-color flex items-center gap-2">
           🎵 Spotify Playlists
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6">
           {data?.playlists?.length > 0 ? (
             data.playlists.map((p) => <PlaylistCard key={p.id} playlist={p} />)
           ) : (
@@ -80,7 +80,8 @@ export default function Recommendations() {
         <h3 className="text-2xl font-bold mb-6 text-font-l-color dark:text-font-d-color flex items-center gap-2">
           🎬 Anime Suggestions
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6">
+
           {data?.anime?.length > 0 ? (
             data.anime.map((a) => <AnimeCard key={a.id} anime={a} />)
           ) : (

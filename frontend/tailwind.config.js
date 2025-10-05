@@ -6,6 +6,12 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      lineHeight: {
+        'relaxed-sm': '1.6',
+      },
+      fontSize: {
+        'responsive-title': ['clamp(1.5rem, 5vw, 2.25rem)', '1.2'],
+      },
       colors: {
         'nav-d-bg': '#2C2C2C',
         'card-l-bg':'#FCFCFC',

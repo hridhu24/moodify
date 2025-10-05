@@ -13,12 +13,7 @@ export default function About() {
   return (
     <section
       className="
-        relative min-h-screen pt-32 pb-20 px-6
-        font-poppins text-center overflow-hidden
-        flex flex-col items-center
-        bg-gradient-to-b from-button-1/20 via-button-2/10 to-transparent
-      dark:from-button-2/20 dark:via-[#2C2C2C]/50 dark:to-transparent
-      "
+        relative min-h-screen pt-24 sm:pt-32 pb-16 px-4 sm:px-6 text-center font-poppins overflow-hidden flex flex-col items-center"
     >
       {/* 🌸 Floating Petals (Background Layer) */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -74,7 +69,7 @@ export default function About() {
         className="relative z-10 max-w-5xl"
       >
         {/* Page Title */}
-        <h1 className="text-4xl font-bold text-font-l-color dark:text-font-d-color mb-6 drop-shadow-sm">
+        <h1 className="text-responsive-title font-bold text-font-l-color dark:text-font-d-color mb-6 drop-shadow-sm">
           About Moodify
         </h1>
 
