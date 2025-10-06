@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from recommendations import router as rec_router
-from sentiment import get_mood
 from pydantic import BaseModel
+
+from advanced_emotion import predict_emotion, load_model as load_advanced
+from recommendations import router as rec_router
 
 app = FastAPI()
 
-# Allow frontend requests
-origins = ["http://localhost:3000"]
+# CORS setup
+origins = ["http://localhost:3000", "http://127.0.0.1:3000"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -16,14 +17,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Load the DistilBERT model at startup
+@app.on_event("startup")
+def _warmup():
+    try:
+        load_advanced()
+        print("✅ DistilBERT model loaded successfully")
+    except Exception as e:
+        print("⚠️ Failed to load DistilBERT:", e)
+
+
 class MoodRequest(BaseModel):
     text: str
 
-# Route: mood detection
 @app.post("/mood")
 def detect_mood(request: MoodRequest):
-    mood = get_mood(request.text)
-    return {"mood": mood}
+    text = request.text.strip()
+    if not text:
+        return {"error": "Empty input text"}
 
-# Route group: recommendations (anime + playlists)
+    # Always use advanced model
+    out = predict_emotion(text)
+    return {
+        "engine": "advanced",
+        "label": out["label"],
+        "mood": out["mood"],
+        "scores": out["scores"],
+    }
+
+
+
+# Recommendation routes
 app.include_router(rec_router, prefix="/api")

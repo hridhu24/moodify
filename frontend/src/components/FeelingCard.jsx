@@ -6,6 +6,7 @@ import stressedIcon from "../assets/stressed.png";
 import relaxedIcon from "../assets/relaxed.png";
 import motivatedIcon from "../assets/motivated.png";
 import neutralIcon from "../assets/neutral.png";
+import excitedIcon from "../assets/excited.png";
 
 export default function FeelingCard({ mood }) {
   const moodAssets = {
@@ -26,6 +27,9 @@ export default function FeelingCard({ mood }) {
     },
     motivated: {
       icon: motivatedIcon,
+    },
+    excited: {
+      icon: excitedIcon,
     },
     neutral: {
         icon: neutralIcon,

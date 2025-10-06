@@ -1,63 +1,32 @@
 {
   "happy": [
-    {
-      "id": "mock_h1",
-      "name": "Happy Vibes",
-      "image": "https://picsum.photos/300?random=1",
-      "url": "https://open.spotify.com/playlist/37i9dQZF1DXdPec7aLTmlC",
-      "owner": "Spotify"
-    },
-    {
-      "id": "mock_h2",
-      "name": "Good Mood",
-      "image": "https://picsum.photos/300?random=2",
-      "url": "https://open.spotify.com/playlist/37i9dQZF1DX6aTaZa0K6VA",
-      "owner": "Spotify"
-    }
+    { "title": "Good Vibes Only", "url": "#", "cover": "happy1.jpg" },
+    { "title": "Sunshine Tunes", "url": "#", "cover": "happy2.jpg" }
   ],
   "sad": [
-    {
-      "id": "mock_s1",
-      "name": "Sad Songs",
-      "image": "https://picsum.photos/300?random=3",
-      "url": "https://open.spotify.com/playlist/37i9dQZF1DWVV27DiNWxkR",
-      "owner": "Spotify"
-    }
+    { "title": "Heartbreak Hotel", "url": "#", "cover": "sad1.jpg" }
   ],
-  "stressed": [
-    {
-      "id": "mock_st1",
-      "name": "Calm Lofi",
-      "image": "https://picsum.photos/300?random=4",
-      "url": "https://open.spotify.com/playlist/37i9dQZF1DX3Ogo9pFvBkY",
-      "owner": "Spotify"
-    }
+  "neutral": [
+    { "title": "Lo-Fi Focus", "url": "#", "cover": "neutral1.jpg" }
   ],
   "relaxed": [
-    {
-      "id": "mock_r1",
-      "name": "Deep Focus",
-      "image": "https://picsum.photos/300?random=5",
-      "url": "https://open.spotify.com/playlist/37i9dQZF1DX8Uebhn9wzrS",
-      "owner": "Spotify"
-    }
+    { "title": "Chill & Calm", "url": "#", "cover": "relaxed1.jpg" },
+    { "title": "Evening Acoustic", "url": "#", "cover": "relaxed2.jpg" }
+  ],
+  "stressed": [
+    { "title": "De-Stress Beats", "url": "#", "cover": "stressed1.jpg" }
   ],
   "motivated": [
-    {
-      "id": "mock_m1",
-      "name": "Beast Mode",
-      "image": "https://picsum.photos/300?random=6",
-      "url": "https://open.spotify.com/playlist/37i9dQZF1DX76Wlfdnj7AP",
-      "owner": "Spotify"
-    }
+    { "title": "Hustle Mode", "url": "#", "cover": "motivated1.jpg" },
+    { "title": "Power Hour", "url": "#", "cover": "motivated2.jpg" }
+  ],
+  "angry": [
+    { "title": "Hard Rock Energy", "url": "#", "cover": "angry1.jpg" }
+  ],
+  "excited": [
+    { "title": "Party Booster", "url": "#", "cover": "excited1.jpg" }
   ],
   "default": [
-    {
-      "id": "mock_d1",
-      "name": "All Out 00s",
-      "image": "https://picsum.photos/300?random=7",
-      "url": "https://open.spotify.com/playlist/37i9dQZF1DX4o1oenSJRJd",
-      "owner": "Spotify"
-    }
+    { "title": "Moodify Mix", "url": "#", "cover": "default.jpg" }
   ]
 }

@@ -3,7 +3,12 @@ import requests
 MOOD_GENRES = {
     "happy": "Slice of Life",
     "sad": "Drama",
-    "neutral": "Comedy"
+    "neutral": "Comedy",
+    "angry": "Action",
+    "stressed": "Slice of Life",
+    "excited": "Adventure",
+    "relaxed": "Iyashikei",
+    "motivated": "Sports",
 }
 
 def get_anime_by_mood(mood: str):
