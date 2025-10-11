@@ -13,3 +13,5 @@ backend/.env
 # General
 .DS_Store
 .vscode/
+
+backend/models/emotion_model.onnx
