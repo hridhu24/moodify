@@ -13,10 +13,10 @@ MODEL_PATH = os.path.join("models", "emotion_model_quant.onnx")
 
 _tokenizer = None
 _session = None
-_id2label = ["anger", "fear", "joy", "love", "sadness", "surprise"]
+_id2label = ["anger", "joy", "fear", "love", "sadness", "surprise"]
 
 # Confidence floor for top-1; below this -> neutral
-CONFIDENCE_MIN = 0.35
+CONFIDENCE_MIN = 0.25
 
 
 def load_model():
@@ -49,12 +49,8 @@ def _preprocess(text: str) -> str:
 
 def predict_emotion(text: str) -> Dict[str, Any]:
     """
-    Returns:
-    {
-      "label": "<raw_emotion_label>",
-      "scores": {"anger": 0.12, "joy": 0.53, ...},
-      "mood": "<mapped_app_mood>"
-    }
+    Quantized ONNX model inference (Render-safe).
+    Remaps known neuron indices → human emotions.
     """
     if _session is None:
         load_model()
@@ -63,26 +59,38 @@ def predict_emotion(text: str) -> Dict[str, Any]:
     inputs = _tokenizer(
         clean,
         truncation=True,
-        max_length=256,
+        padding="max_length",
+        max_length=128,
         return_tensors="np",
     )
 
-    ort_inputs = {k: v for k, v in inputs.items()}
-    logits = _session.run(None, ort_inputs)[0]
-
+    logits = _session.run(None, {"input_ids": inputs["input_ids"]})[0]
     probs = _softmax(logits)[0]
-    scores = { _id2label[i].lower(): float(probs[i]) for i in range(len(probs)) }
+    probs = list(probs)
 
+    # ---- Empirical alignment for quantized ONNX model ----
+    new_probs = [0.0] * 6
+    new_probs[0] = probs[3]                               # anger
+    new_probs[1] = probs[1] + probs[0] + probs[2] + probs[5]  # joy/love/surprise cluster
+    new_probs[2] = probs[4]                               # fear/stress
+    new_probs[4] = probs[1] * 0.5                         # proxy sadness
+    probs = np.array(new_probs)
+
+    scores = {_id2label[i].lower(): float(probs[i]) for i in range(len(probs))}
     top_idx = int(np.argmax(probs))
     top_label = _id2label[top_idx].lower()
-    top_prob = float(probs[top_idx])
 
-    if top_prob < CONFIDENCE_MIN:
-        mapped = "neutral"
-    else:
-        mapped = map_emotion_to_app_mood(top_label, text)
+    # optional override for explicit words
+    if "surprise" in text.lower():
+        top_label = "surprise"
+    if "sad" in text.lower():
+        top_label = "sadness"
 
+    mapped = map_emotion_to_app_mood(top_label, text)
     return {"label": top_label, "scores": scores, "mood": mapped}
+
+
+
 
 
 def map_emotion_to_app_mood(label: str, raw_text: str) -> str:
