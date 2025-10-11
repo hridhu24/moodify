@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from advanced_emotion import predict_emotion, load_model as load_advanced
 from recommendations import router as rec_router
@@ -8,7 +11,7 @@ from recommendations import router as rec_router
 app = FastAPI()
 
 # CORS setup
-origins = ["http://localhost:3000", "http://127.0.0.1:3000", "https://moodify-ten-steel.vercel.app"]
+origins = ["http://localhost:3000", "http://127.0.0.1:3000", "https://moodify-qbjuvrlhv-hridhus-projects.vercel.app"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
