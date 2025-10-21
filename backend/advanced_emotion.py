@@ -111,7 +111,7 @@ def map_emotion_to_app_mood(label: str, raw_text: str) -> str:
 
     if l in {"joy", "love"}:
         return "happy"
-    if l in {"sad", "sadness"}:
+    if l in {"sad", "sadness","depressed", "depress"}:
         return "sad"
     if l in {"anger", "angry"}:
         return "angry"

@@ -11,7 +11,9 @@ from recommendations import router as rec_router
 app = FastAPI()
 
 # CORS setup
-origins = ["http://localhost:3000", "http://127.0.0.1:3000", "https://moodify-ten-steel.vercel.app/"]
+origins = ["http://localhost:3000",
+            "http://127.0.0.1:3000",
+              "https://moodify-ten-steel.vercel.app/"]
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
