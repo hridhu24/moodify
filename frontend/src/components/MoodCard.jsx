@@ -25,7 +25,7 @@ export default function MoodCard({ onSubmit }) {
       className="
         max-w-3xl w-full mx-auto
         backdrop-blur-2xl
-        rounded-card shadow-soft
+        rounded-mood-card shadow-soft
         border border-white/10 dark:border-gray-700/10
         p-10 md:p-14
         flex flex-col items-center justify-center 
@@ -83,7 +83,7 @@ export default function MoodCard({ onSubmit }) {
           {loading ? (
             <div className="flex items-center justify-center gap-3">
               <Loader />
-              <span className="text-white text-sm">Detecting Mood...</span>
+              <span className="text-white text-sm">Analyzing Mood...</span>
             </div>
           ) : (
             "Moodify Me"
