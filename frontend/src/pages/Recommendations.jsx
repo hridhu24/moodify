@@ -4,6 +4,8 @@ import PlaylistCard from "../components/PlaylistCard";
 import AnimeCard from "../components/AnimeCard";
 import FeelingCard from "../components/FeelingCard";
 import Loader from "../components/Loader";
+import { API_BASE } from "../config";
+
 
 
 export default function Recommendations() {
@@ -26,7 +28,7 @@ export default function Recommendations() {
 
     setLoading(true);
     setError("");
-    fetch(`http://127.0.0.1:8000/api/recommend/${mood}`)
+    fetch(`${API_BASE}/api/recommend/${mood}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch recommendations");
         return res.json();
@@ -89,6 +91,13 @@ export default function Recommendations() {
           )}
         </div>
       </section>
+
+      {/* ⚠️ Error message (added here) */}
+      {error && (
+        <p className="text-center text-red-400 mt-10">
+          ⚠️ {error}
+        </p>
+      )}
     </div>
   );
 }
