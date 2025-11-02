@@ -5,8 +5,18 @@ import About from "./pages/About";
 import bgLight from "./assets/bg_light.jpg";
 import bgDark from "./assets/bg_dark_1.png";
 import Recommendations from "./pages/Recommendations";
+import { useEffect } from "react";
+import { API_BASE } from "./config";
+
 
 function App() {
+  useEffect(() => {
+    // Warm up backend when app loads
+    fetch(`${API_BASE}/ping`)
+      .then(() => console.log("✅ Backend awake"))
+      .catch(() => console.log("⚠️ Backend wake-up failed"));
+  }, []);
+
   return (
     <Router>
       {/* Wrapper with relative positioning */}
@@ -34,6 +44,7 @@ function App() {
       </div>
     </Router>
   );
+  
 }
 
 export default App;

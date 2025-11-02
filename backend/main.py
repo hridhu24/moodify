@@ -9,6 +9,10 @@ from advanced_emotion import predict_emotion, load_model as load_advanced
 from recommendations import router as rec_router
 
 app = FastAPI()
+@app.get("/ping")
+def ping():
+    return {"status": "ok", "message": "Server awake 🚀"}
+
 
 # CORS setup
 origins = ["http://localhost:3000",
