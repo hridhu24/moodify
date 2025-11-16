@@ -1,118 +1,87 @@
 import os
+import requests
 from typing import Dict, Any
-import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from dotenv import load_dotenv
 
-os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
+# Load HF token
+load_dotenv()
+HF_API_KEY = os.getenv("HF_API_KEY")
 
-# HuggingFace model (small & Render-safe)
-MODEL_NAME = "j-hartmann/emotion-english-distilroberta-base"
+# HuggingFace Inference API endpoint
+API_URL = "https://api-inference.huggingface.co/models/j-hartmann/emotion-english-distilroberta-base"
 
-_tokenizer = None
-_model = None
-
-# Forces CPU (Render free tier cannot use GPU)
-_device = torch.device("cpu")
-
-# Confidence threshold → fallback to neutral
-CONFIDENCE_MIN = 0.30
-
-
-def load_model():
-    """Load Transformer model + tokenizer once."""
-    global _tokenizer, _model
-
-    if _model is not None:
-        return
-
-    print("⏳ Downloading emotion model from HuggingFace…")
-    _tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    _model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
-    _model.to(_device).eval()
-    print("✅ Emotion model loaded successfully:", MODEL_NAME)
-
-
-def _softmax(logits: torch.Tensor):
-    """Stable softmax."""
-    probs = torch.nn.functional.softmax(logits, dim=-1)[0]
-    return probs.cpu().numpy()
-
-
-def _preprocess(text: str) -> str:
-    """Prevent 1-word input issues and trim."""
-    text = text.strip()
-    if len(text.split()) == 1:
-        return f"I feel {text}."
-    return text
+HEADERS = {
+    "Authorization": f"Bearer {HF_API_KEY}",
+    "Content-Type": "application/json",
+}
 
 
 def predict_emotion(text: str) -> Dict[str, Any]:
-    """Main prediction function."""
-    if _model is None:
-        load_model()
+    """Send text to HuggingFace API and map the response to app moods."""
 
-    clean = _preprocess(text)
+    # Prepare payload
+    payload = {"inputs": text}
 
-    # Lower max_length → lower memory (safer for Render)
-    inputs = _tokenizer(
-        clean,
-        return_tensors="pt",
-        truncation=True,
-        max_length=128,
-    ).to(_device)
+    # HF API call
+    try:
+        response = requests.post(API_URL, headers=HEADERS, json=payload, timeout=10)
+        response_json = response.json()
+    except Exception:
+        return {"label": "neutral", "scores": {}, "mood": "neutral"}
 
-    with torch.no_grad():
-        logits = _model(**inputs).logits
+    # Handle model loading state
+    if "error" in response_json:
+        return {"label": "neutral", "scores": {}, "mood": "neutral"}
 
-    probs = _softmax(logits)
+    # HF returns nested list: [[{label, score}, ...]]
+    predictions = response_json[0]
 
-    labels = _model.config.id2label
-    scores = {labels[i].lower(): float(probs[i]) for i in range(len(probs))}
+    # Make a proper scores dict
+    scores = {item["label"].lower(): item["score"] for item in predictions}
 
     # Top prediction
-    top_idx = int(probs.argmax())
-    top_label = labels[top_idx].lower()
-    top_prob = float(probs[top_idx])
+    top = max(predictions, key=lambda x: x["score"])
+    top_label = top["label"].lower()
 
-    # Confidence threshold → fallback to neutral
-    if top_prob < CONFIDENCE_MIN:
-        top_label = "neutral"
-
+    # Map raw emotion → Moodify mood
     mood = map_emotion_to_app_mood(top_label, text)
 
-    return {
-        "label": top_label,
-        "scores": scores,
-        "mood": mood
-    }
+    return {"label": top_label, "scores": scores, "mood": mood}
 
 
 def map_emotion_to_app_mood(label: str, raw_text: str) -> str:
     """
-    Map raw sentiment → app mood categories.
+    Convert model emotions → app moods.
     Model labels: anger, disgust, fear, joy, neutral, sadness, surprise
     App moods: angry, sad, happy, relaxed, motivated, stressed, excited, neutral
     """
     l = label.lower()
     rt = raw_text.lower()
 
-    # Keyword overrides first
+    # Keyword overrides for extra moods:
     if any(k in rt for k in ["relax", "calm", "peaceful", "chill"]):
         return "relaxed"
-    if any(k in rt for k in ["motivat", "driven", "pumped", "ambitio"]):
+
+    if any(k in rt for k in ["motivat", "pumped", "driven", "ambitio"]):
         return "motivated"
-    if any(k in rt for k in ["stress", "anxious", "worry", "panic", "overwhelm"]):
+
+    if any(k in rt for k in ["stress", "nervous", "anxious", "worry", "panic", "overwhelm"]):
         return "stressed"
 
-    # Emotion → Mood mapping
+    # Standard emotion → mood mapping
     if l == "joy":
         return "happy"
+
     if l in ["sadness", "sad"]:
         return "sad"
+
     if l in ["anger", "angry", "disgust"]:
         return "angry"
+
     if l == "fear":
         return "stressed"
+
     if l == "surprise":
         return "excited"
+
     return "neutral"

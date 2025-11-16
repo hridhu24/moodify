@@ -5,19 +5,30 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from advanced_emotion import predict_emotion, load_model as load_advanced
+# Now predict_emotion uses HF API (lightweight!)
+from advanced_emotion import predict_emotion
 from recommendations import router as rec_router
 
 app = FastAPI()
+
+
+# -------------------------
+# 🔥 HEALTH CHECK ENDPOINT
+# -------------------------
 @app.get("/ping")
 def ping():
     return {"status": "ok", "message": "Server awake 🚀"}
 
 
-# CORS setup
-origins = ["http://localhost:3000",
-            "http://127.0.0.1:3000",
-            "https://moodify-ten-steel.vercel.app"]
+# -------------------------
+# 🔥 CORS SETTINGS
+# -------------------------
+origins = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://moodify-ten-steel.vercel.app",
+]
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -26,35 +37,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Load the DistilBERT model at startup
-@app.on_event("startup")
-def _warmup():
-    try:
-        load_advanced()
-        print("✅ DistilBERT model loaded successfully")
-    except Exception as e:
-        print("⚠️ Failed to load DistilBERT:", e)
 
-
+# -------------------------
+# 🔥 REQUEST BODY MODEL
+# -------------------------
 class MoodRequest(BaseModel):
     text: str
 
+
+# -------------------------
+# 🔥 MAIN EMOTION ENDPOINT
+# -------------------------
 @app.post("/mood")
 def detect_mood(request: MoodRequest):
     text = request.text.strip()
+
     if not text:
         return {"error": "Empty input text"}
 
-    # Always use advanced model
+    # This now calls HuggingFace API (NO local model)
     out = predict_emotion(text)
+
     return {
-        "engine": "advanced",
+        "engine": "huggingface-api",
         "label": out["label"],
         "mood": out["mood"],
         "scores": out["scores"],
     }
 
 
-
-# Recommendation routes
+# -------------------------
+# 🔥 RECOMMENDATION ROUTES
+# -------------------------
 app.include_router(rec_router, prefix="/api")
