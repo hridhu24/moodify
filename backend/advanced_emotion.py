@@ -1,46 +1,39 @@
-# backend/advanced_emotion.py
 import os
-import numpy as np
-import onnxruntime as ort
-from transformers import AutoTokenizer
 from typing import Dict, Any
+import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
 os.environ.setdefault("TOKENIZERS_PARALLELISM", "false")
 
-MODEL_NAME = "bhadresh-savani/distilbert-base-uncased-emotion"  # 6 emotions
-MODEL_PATH = os.path.join("models", "emotion_model_quant.onnx")
-
+# ✅ New smaller, clean model
+MODEL_NAME = "j-hartmann/emotion-english-distilroberta-base"
 
 _tokenizer = None
-_session = None
-_id2label = ["anger", "joy", "fear", "love", "sadness", "surprise"]
+_model = None
+_device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Confidence floor for top-1; below this -> neutral
-CONFIDENCE_MIN = 0.25
+# Confidence threshold → fallback to neutral
+CONFIDENCE_MIN = 0.30
 
 
 def load_model():
-    """
-    Loads ONNX model + tokenizer once.
-    """
-    global _tokenizer, _session
-    if _session is not None:
+    """Load model + tokenizer once."""
+    global _tokenizer, _model
+    if _model is not None:
         return
-
     _tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    _session = ort.InferenceSession(
-        MODEL_PATH,
-        providers=["CPUExecutionProvider"],
-    )
-    print(" ONNX Emotion model loaded successfully ")
+    _model = AutoModelForSequenceClassification.from_pretrained(MODEL_NAME)
+    _model.to(_device).eval()
+    print("✅ Emotion model loaded successfully:", MODEL_NAME)
 
 
-def _softmax(x: np.ndarray) -> np.ndarray:
-    e_x = np.exp(x - np.max(x))
-    return e_x / e_x.sum(axis=-1, keepdims=True)
+def _softmax(logits: torch.Tensor):
+    probs = torch.nn.functional.softmax(logits, dim=-1)[0]
+    return probs.detach().cpu().numpy()
 
 
 def _preprocess(text: str) -> str:
+    """Basic cleanup."""
     t = text.strip()
     if len(t.split()) == 1:
         t = f"I feel {t}."
@@ -48,60 +41,42 @@ def _preprocess(text: str) -> str:
 
 
 def predict_emotion(text: str) -> Dict[str, Any]:
-    """
-    Quantized ONNX model inference (Render-safe).
-    Remaps known neuron indices → human emotions.
-    """
-    if _session is None:
+    """Predict emotion and map to app moods."""
+    if _model is None:
         load_model()
 
     clean = _preprocess(text)
-    inputs = _tokenizer(
-        clean,
-        truncation=True,
-        padding="max_length",
-        max_length=128,
-        return_tensors="np",
-    )
+    inputs = _tokenizer(clean, truncation=True, max_length=256, return_tensors="pt").to(_device)
 
-    logits = _session.run(None, {"input_ids": inputs["input_ids"]})[0]
-    probs = _softmax(logits)[0]
-    probs = list(probs)
+    with torch.no_grad():
+        outputs = _model(**inputs)
+        logits = outputs.logits
 
-    # ---- Empirical alignment for quantized ONNX model ----
-    new_probs = [0.0] * 6
-    new_probs[0] = probs[3]                               # anger
-    new_probs[1] = probs[1] + probs[0] + probs[2] + probs[5]  # joy/love/surprise cluster
-    new_probs[2] = probs[4]                               # fear/stress
-    new_probs[4] = probs[1] * 0.5                         # proxy sadness
-    probs = np.array(new_probs)
+    probs = _softmax(logits)
+    labels = _model.config.id2label
+    scores = {labels[i].lower(): float(probs[i]) for i in range(len(probs))}
 
-    scores = {_id2label[i].lower(): float(probs[i]) for i in range(len(probs))}
-    top_idx = int(np.argmax(probs))
-    top_label = _id2label[top_idx].lower()
+    top_idx = int(probs.argmax())
+    top_label = labels[top_idx].lower()
+    top_prob = float(probs[top_idx])
 
-    # optional override for explicit words
-    if "surprise" in text.lower():
-        top_label = "surprise"
-    if "sad" in text.lower():
-        top_label = "sadness"
+    if top_prob < CONFIDENCE_MIN:
+        top_label = "neutral"
 
-    mapped = map_emotion_to_app_mood(top_label, text)
-    return {"label": top_label, "scores": scores, "mood": mapped}
-
-
-
+    mood = map_emotion_to_app_mood(top_label, text)
+    return {"label": top_label, "scores": scores, "mood": mood}
 
 
 def map_emotion_to_app_mood(label: str, raw_text: str) -> str:
     """
-    Model labels: sadness, joy, love, anger, fear, surprise
-    App moods:   happy, sad, angry, stressed, excited, neutral
-    (relaxed/motivated are UI-only; support via keyword shim below)
+    Map model emotions → app moods.
+    Model labels: anger, disgust, fear, joy, neutral, sadness, surprise
+    App moods: angry, happy, stressed, sad, excited, neutral
     """
     l = label.lower()
     rt = raw_text.lower()
 
+    # Keyword overrides
     if any(k in rt for k in ["relax", "calm", "chill", "peaceful"]):
         return "relaxed"
     if any(k in rt for k in ["motivat", "pumped", "driven", "ambitio"]):
@@ -109,14 +84,17 @@ def map_emotion_to_app_mood(label: str, raw_text: str) -> str:
     if any(k in rt for k in ["stress", "anxious", "overwhelmed", "panic"]):
         return "stressed"
 
-    if l in {"joy", "love"}:
+    # Label mapping
+    if l in {"joy"}:
         return "happy"
-    if l in {"sad", "sadness","depressed", "depress"}:
+    if l in {"sad", "sadness"}:
         return "sad"
     if l in {"anger", "angry"}:
         return "angry"
     if l in {"fear"}:
         return "stressed"
+    if l in {"disgust"}:
+        return "angry"
     if l in {"surprise"}:
         return "excited"
     return "neutral"
