@@ -1,7 +1,9 @@
 fastapi
 uvicorn
-transformers
-torch
+transformers==4.37.2
+torch==2.2.0+cpu
 numpy
 python-dotenv
 requests
+
+--extra-index-url https://download.pytorch.org/whl/cpu
